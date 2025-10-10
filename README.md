@@ -13,20 +13,27 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 
 ## 📦 Installation
 
-### Option 1: Local Development (Current)
+### Option 1: From GitHub (Recommended)
 
 ```bash
-# The plugin is already in this repo at:
-/Users/michaelevans/codymd-hacknback-main/claude-memory-bank-plugin/
+# Add the marketplace
+/plugin marketplace add https://github.com/mevans2120/hybrid-memory-bank.git
 
-# To use it with Claude Code (when plugin system is available):
-claude-code plugin link ./claude-memory-bank-plugin
+# Install the plugin
+/plugin install hybrid-memory-bank
 ```
 
-### Option 2: From GitHub (Future)
+### Option 2: Local Development
 
 ```bash
-claude-code plugin install yourusername/hybrid-memory-bank-plugin
+# Clone the repository
+git clone https://github.com/mevans2120/hybrid-memory-bank.git
+
+# Add local marketplace
+/plugin marketplace add /path/to/hybrid-memory-bank
+
+# Install the plugin
+/plugin install hybrid-memory-bank@hybrid-memory-bank-dev-marketplace
 ```
 
 ## 🎯 Quick Start
