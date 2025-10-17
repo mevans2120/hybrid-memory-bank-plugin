@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * postToolUse hook wrapper
+ * preToolUse hook wrapper
  * Bridges Claude Code's shell hook to the JavaScript implementation
  */
 
@@ -14,14 +14,14 @@ async function main() {
     const context = await readStdin();
 
     // Path to the original hook implementation
-    const hookPath = path.resolve(__dirname, '../../src/hooks/postToolUse.js');
+    const hookPath = path.resolve(__dirname, '../../src/hooks/preToolUse.js');
 
     // Execute the original hook
     const result = await executeHook(hookPath, context);
 
     // Write response to stdout
     writeResponse({
-      message: 'Tool use processed successfully',
+      message: 'PreToolUse hook executed',
       result
     });
   } catch (error) {
