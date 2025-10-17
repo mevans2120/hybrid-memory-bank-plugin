@@ -13,7 +13,9 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 
 ## 📦 Installation
 
-### Option 1: From GitHub (Recommended)
+### For New Users
+
+#### Option 1: From GitHub (Recommended)
 
 ```bash
 # Clone the repository
@@ -23,8 +25,33 @@ cd hybrid-memory-bank-plugin
 # Install dependencies
 npm install
 
+# Make hook scripts executable
+chmod +x .claude/hooks/*.js
+
 # The plugin hooks are automatically registered via .claude/settings.json
 ```
+
+### For Existing Users (Updating from v0.1.0)
+
+If you already have the plugin installed, update to v0.2.0 with these steps:
+
+```bash
+# Navigate to your plugin directory
+cd hybrid-memory-bank-plugin
+
+# Pull the latest changes
+git pull
+
+# Install any new dependencies
+npm install
+
+# Make the new hook scripts executable
+chmod +x .claude/hooks/*.js
+
+# Restart your Claude Code session for hooks to take effect
+```
+
+**Important**: The plugin now uses Claude Code's native hook system. The old plugin API approach no longer works.
 
 ### Option 2: Manual Installation
 
@@ -37,6 +64,9 @@ cd .hybrid-memory-plugin && npm install
 
 # Copy the .claude directory to your project root
 cp -r .claude ../
+
+# Make hook scripts executable
+chmod +x ../.claude/hooks/*.js
 ```
 
 **Note**: The plugin now uses Claude Code's native hook system via `.claude/settings.json`. No additional plugin installation commands are needed.
