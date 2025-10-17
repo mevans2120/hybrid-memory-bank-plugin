@@ -1,7 +1,22 @@
 {
   "hooks": {
-    "sessionStart": "node .claude/hooks/sessionStart.js",
-    "postToolUse": "node .claude/hooks/postToolUse.js",
-    "userPromptSubmit": "node .claude/hooks/userPromptSubmit.js"
+    "sessionStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "node .claude/hooks/sessionStart.js"
+      }]
+    }],
+    "postToolUse": [{
+      "hooks": [{
+        "type": "command",
+        "command": "node .claude/hooks/postToolUse.js"
+      }]
+    }],
+    "userPromptSubmit": [{
+      "hooks": [{
+        "type": "command",
+        "command": "node .claude/hooks/userPromptSubmit.js"
+      }]
+    }]
   }
 }

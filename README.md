@@ -52,6 +52,16 @@ chmod +x .claude/hooks/*.js
 
 **Important**: The plugin now uses Claude Code's native hook system. The old plugin API approach no longer works.
 
+### ⚠️ Important: Enable Hooks in Claude Code
+
+**You must enable hooks in your Claude Code settings for the plugin to work:**
+
+1. Open Claude Code settings (use `/config` command or manually edit)
+2. Ensure hooks are enabled by setting `"hooksEnabled": true`
+3. Restart Claude Code after making this change
+
+Without hooks enabled, the plugin will not function as none of the automatic tracking, initialization, or documentation reminders will trigger.
+
 ### Option 2: Manual Installation
 
 ```bash
@@ -362,7 +372,13 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 ### Hooks Not Working
 
 **Problem**: Hooks don't seem to trigger
-**Solution**: Ensure `.claude/settings.json` exists and hooks are executable:
+**Solution**:
+1. **First, ensure hooks are enabled in Claude Code settings:**
+   - Open Claude Code settings with `/config` command
+   - Set `"hooksEnabled": true`
+   - Restart Claude Code
+2. Ensure `.claude/settings.json` exists and has correct hook configuration
+3. Make sure hook scripts are executable:
 ```bash
 chmod +x .claude/hooks/*.js
 ```
