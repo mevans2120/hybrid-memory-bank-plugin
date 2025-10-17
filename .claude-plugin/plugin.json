@@ -1,23 +1,9 @@
 {
   "name": "hybrid-memory-bank",
-  "version": "0.1.0",
-  "displayName": "Hybrid Memory Bank",
+  "version": "0.2.0",
   "description": "Hybrid memory system combining automated JSON storage with human documentation for persistent project context across sessions",
-  "author": "Michael Evans",
-  "license": "MIT",
-
-  "engines": {
-    "claudeCode": ">=1.0.0",
-    "node": ">=18.0.0"
+  "author": {
+    "name": "Michael Evans"
   },
-
-  "main": "src/index.js",
-
-  "config": {
-    "memoryDir": ".claude-memory",
-    "memoryBankDir": "memory-bank",
-    "sessionExpiryHours": 24,
-    "maxRecentChanges": 20,
-    "autoArchiveOnExit": true
-  }
+  "license": "MIT"
 }
