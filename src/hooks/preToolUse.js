@@ -19,57 +19,55 @@ function isGitAdd(toolName, params) {
 }
 
 /**
- * Generate memory bank update reminder
+ * Generate actionable instruction for Claude to update memory bank
  */
-async function generateCommitReminder(session, workingDirectory) {
-  let reminder = '\n';
-  reminder += '━'.repeat(60) + '\n';
-  reminder += '📝 MEMORY BANK UPDATE REMINDER\n';
-  reminder += '━'.repeat(60) + '\n\n';
+async function generateMemoryUpdateInstruction(session, workingDirectory, gitCommand) {
+  const instruction = {
+    message: '',
+    sessionData: session,
+    filesToUpdate: []
+  };
 
-  reminder += 'Before staging changes, consider updating:\n\n';
+  let message = '\n';
+  message += '━'.repeat(60) + '\n';
+  message += '🤖 INSTRUCTION: Update Memory Bank Before Git Operation\n';
+  message += '━'.repeat(60) + '\n\n';
+
+  message += 'Claude, before proceeding with the git command, you must:\n\n';
 
   // Check session activity
   const recentChanges = session?.recentChanges || [];
   const hasChanges = recentChanges.length > 0;
 
-  if (hasChanges) {
-    reminder += '   ✓ memory-bank/CURRENT.md\n';
-    reminder += '     → Update current project state\n\n';
+  message += '1. Update .claude-memory/session/current.json with:\n';
 
-    reminder += '   ✓ memory-bank/progress.md\n';
-    reminder += '     → Add what was accomplished\n\n';
+  if (hasChanges) {
+    message += '   • Add any new file changes to recentChanges array\n';
+    message += '   • Update currentTask.files with files being committed\n';
+    instruction.filesToUpdate.push('.claude-memory/session/current.json');
+  }
+
+  message += '   • Set currentTask.progress appropriately\n';
+  message += '   • Add contextNotes about what was accomplished\n\n';
+
+  // Extract files from git add command
+  const gitAddMatch = gitCommand.match(/git\s+add\s+(.+)/);
+  if (gitAddMatch) {
+    const filesBeingAdded = gitAddMatch[1].split(/\s+/).filter(f => f && f !== '&&');
+    message += `2. Files being staged: ${filesBeingAdded.join(', ')}\n`;
+    message += '   Ensure these are reflected in the session memory\n\n';
   }
 
   // Check if feature work
   if (session?.currentTask?.feature) {
-    reminder += '   ✓ memory-bank/CHANGELOG.md\n';
-    reminder += '     → Document feature changes\n\n';
+    message += '3. Document the feature work in session notes\n\n';
   }
 
-  // Check memory-bank/ freshness
-  const memoryBankPath = path.join(workingDirectory, 'memory-bank');
-  try {
-    const currentMdPath = path.join(memoryBankPath, 'CURRENT.md');
-    const stats = await fs.stat(currentMdPath);
-    const hoursSinceUpdate = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60);
+  message += 'After updating the memory, proceed with the git operation.\n';
+  message += '━'.repeat(60) + '\n\n';
 
-    if (hoursSinceUpdate > 24) {
-      reminder += `   ⚠️  CURRENT.md last updated ${Math.floor(hoursSinceUpdate)} hours ago\n\n`;
-    }
-  } catch (error) {
-    reminder += '   ⚠️  memory-bank/CURRENT.md not found\n\n';
-  }
-
-  reminder += 'Quick commands:\n';
-  reminder += '   • /memory show - View current session\n';
-  reminder += '   • /memory end-session - Guided documentation update\n\n';
-
-  reminder += '━'.repeat(60) + '\n';
-  reminder += 'Proceeding with git add...\n';
-  reminder += '━'.repeat(60) + '\n\n';
-
-  return reminder;
+  instruction.message = message;
+  return instruction;
 }
 
 /**
@@ -88,13 +86,21 @@ async function onPreToolUse(context) {
   try {
     const session = await memory.getCurrentSession();
 
-    // Generate and show reminder
-    const reminder = await generateCommitReminder(session, workingDirectory);
-    logger.info(reminder);
+    // Generate instruction for Claude to update memory bank
+    const instruction = await generateMemoryUpdateInstruction(
+      session,
+      workingDirectory,
+      parameters.command
+    );
+
+    // Log the instruction so it appears in Claude's context
+    logger.info(instruction.message);
 
     return {
       triggered: true,
-      message: 'Memory bank reminder shown',
+      message: instruction.message,
+      sessionData: instruction.sessionData,
+      filesToUpdate: instruction.filesToUpdate,
       sessionId: session?.sessionId
     };
 
