@@ -84,6 +84,11 @@ chmod +x ../.claude/hooks/*.js
 
 1. **Plugin Auto-Initializes**: When Claude Code starts, the SessionStart hook automatically:
    - Initializes `.claude-memory/` directory structure
+   - Creates `memory-bank/` directory with template files if not present:
+     - `CURRENT.md` - Current project status
+     - `progress.md` - Session summaries
+     - `CHANGELOG.md` - Major features/deployments
+     - `ARCHITECTURE.md` - Architecture decisions
    - Cleans up expired sessions
    - Displays current session state
    - Shows Memory Bank status from `memory-bank/CURRENT.md`
@@ -211,6 +216,7 @@ The plugin uses Claude Code's native hook system via `.claude/settings.json`. Ea
 **Trigger**: When Claude Code starts a new session
 **Action**:
 - Initializes `.claude-memory/` directories
+- Creates `memory-bank/` directory with template files (CURRENT.md, progress.md, CHANGELOG.md, ARCHITECTURE.md) if not present
 - Cleans expired sessions
 - Creates new session if none exists
 - Displays Memory Bank status
@@ -248,6 +254,8 @@ The plugin uses a hybrid bridge approach:
 1. **Session Start** (Automatic)
    ```
    Claude Code starts → SessionStart hook fires
+   → Initialize .claude-memory/ directories
+   → Create memory-bank/ template files if not present
    → Check for expired sessions
    → Create/load current session
    → Display status

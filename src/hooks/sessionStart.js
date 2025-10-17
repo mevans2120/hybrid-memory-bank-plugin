@@ -26,8 +26,8 @@ function formatSessionDisplay(session, techStack, currentMd) {
     const lines = currentMd.split('\n').slice(0, 20);
     output += lines.join('\n') + '\n\n';
   } else {
-    output += '⚠️  memory-bank/CURRENT.md not found\n';
-    output += '   Create this file to track current project status\n\n';
+    output += '📝 memory-bank/ files initialized with templates\n';
+    output += '   Update CURRENT.md to track project status\n\n';
   }
 
   // Claude Memory Status
@@ -90,6 +90,9 @@ async function onSessionStart(context) {
     // Initialize memory directories if needed
     await memory.initialize();
 
+    // Initialize memory-bank directory and files if needed
+    const memoryBankInit = await memory.initializeMemoryBank();
+
     // Clean expired sessions
     await memory.cleanExpired();
 
@@ -115,10 +118,16 @@ async function onSessionStart(context) {
     const output = formatSessionDisplay(session, techStack, currentMd);
     logger.info(output);
 
+    // Log memory bank initialization if files were created
+    if (memoryBankInit.filesCreated.length > 0) {
+      logger.info(`\n✅ Created memory-bank files: ${memoryBankInit.filesCreated.join(', ')}\n`);
+    }
+
     return {
       success: true,
       message: 'Session initialized successfully',
-      sessionId: session.sessionId
+      sessionId: session.sessionId,
+      memoryBankInit
     };
 
   } catch (error) {

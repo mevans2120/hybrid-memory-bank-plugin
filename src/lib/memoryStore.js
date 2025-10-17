@@ -47,6 +47,168 @@ session/archive/*.json
   }
 
   /**
+   * Initialize memory-bank directory with template files
+   */
+  async initializeMemoryBank() {
+    const memoryBankDir = path.join(this.baseDir, 'memory-bank');
+
+    // Create memory-bank directory
+    await fs.mkdir(memoryBankDir, { recursive: true });
+
+    // Template files with their content
+    const templates = {
+      'CURRENT.md': `# Current Project Status
+
+## Overview
+<!-- Brief description of the project -->
+
+## Current Focus
+<!-- What you're working on right now -->
+
+## Active Tasks
+- [ ] Task 1
+- [ ] Task 2
+
+## Recent Changes
+<!-- What was recently completed -->
+
+## Next Steps
+<!-- What's coming up next -->
+
+## Known Issues
+<!-- Any blockers or problems to be aware of -->
+
+---
+*Last updated: ${new Date().toISOString().split('T')[0]}*
+`,
+
+      'progress.md': `# Project Progress
+
+## Session History
+
+<!-- Add session summaries below using this template:
+
+## Session YYYY-MM-DD
+
+**Duration**: Xh Ym
+**Focus**: [What you worked on]
+
+### Completed
+- Feature/fix description
+
+### Files Modified
+- path/to/file.js
+- path/to/other.ts
+
+### Notes
+- Important context for next session
+
+---
+
+-->
+`,
+
+      'CHANGELOG.md': `# Changelog
+
+All notable changes to this project will be documented here.
+
+## [Unreleased]
+
+<!-- Track major features and deployments here -->
+
+### Added
+-
+
+### Changed
+-
+
+### Fixed
+-
+
+---
+
+<!-- Format for entries:
+## [Version] - YYYY-MM-DD
+
+### Added
+- New feature description
+
+### Changed
+- Changes to existing features
+
+### Fixed
+- Bug fixes
+
+### Deployment
+- Deployment notes
+-->
+`,
+
+      'ARCHITECTURE.md': `# Architecture Documentation
+
+## System Overview
+<!-- High-level description of the system architecture -->
+
+## Key Components
+<!-- Main components and their responsibilities -->
+
+## Data Flow
+<!-- How data flows through the system -->
+
+## Technology Stack
+<!-- Core technologies and frameworks -->
+
+## Design Decisions
+<!-- Important architectural decisions and their rationale -->
+
+### Decision: [Title]
+**Date**: YYYY-MM-DD
+**Status**: Accepted | Proposed | Deprecated
+
+**Context**:
+<!-- What problem are we solving? -->
+
+**Decision**:
+<!-- What did we decide to do? -->
+
+**Consequences**:
+<!-- What are the trade-offs? -->
+
+---
+
+## Integration Points
+<!-- External systems and APIs -->
+
+## Security Considerations
+<!-- Security architecture and measures -->
+
+## Future Considerations
+<!-- Planned architectural changes or improvements -->
+`
+    };
+
+    // Create each template file if it doesn't exist
+    const created = [];
+    for (const [filename, content] of Object.entries(templates)) {
+      const filePath = path.join(memoryBankDir, filename);
+      try {
+        await fs.access(filePath);
+        // File exists, skip
+      } catch {
+        // File doesn't exist, create it
+        await fs.writeFile(filePath, content, 'utf-8');
+        created.push(filename);
+      }
+    }
+
+    return {
+      initialized: true,
+      directory: memoryBankDir,
+      filesCreated: created
+    };
+  }
+
+  /**
    * Read memory by category and key
    */
   async get(category, key) {
