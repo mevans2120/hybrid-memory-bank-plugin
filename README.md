@@ -42,14 +42,13 @@ cd hybrid-memory-bank-plugin
 # Pull the latest changes
 git pull
 
-# Install any new dependencies
-npm install
-
 # Make the new hook scripts executable
 chmod +x .claude/hooks/*.js
 
 # Restart your Claude Code session for hooks to take effect
 ```
+
+**Note**: No new dependencies were added in v0.2.0, so `npm install` is not required.
 
 **Important**: The plugin now uses Claude Code's native hook system. The old plugin API approach no longer works.
 
