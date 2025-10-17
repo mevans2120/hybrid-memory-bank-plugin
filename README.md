@@ -5,9 +5,9 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 ## 🚀 Features
 
 - **Auto Session Management**: Automatically initializes and archives sessions
-- **File Change Tracking**: Records all edits, creates, and deletions via PostToolUse hook
+- **Pre-Commit Memory Updates**: Instructs Claude to update memory bank before staging changes via PreToolUse hook
 - **Pattern Learning**: Remembers code patterns and conventions
-- **Smart Reminders**: Prompts for documentation updates when appropriate
+- **Smart Reminders**: Prompts for documentation updates at the right moment in git workflow
 - **Cross-Platform**: Pure Node.js, works on Windows, Mac, and Linux
 - **Zero Config**: Works out of the box with sensible defaults
 
@@ -88,7 +88,7 @@ chmod +x ../.claude/hooks/*.js
    - Displays current session state
    - Shows Memory Bank status from `memory-bank/CURRENT.md`
 
-2. **Work Normally**: File changes are tracked automatically via PostToolUse hook
+2. **Work Normally**: Memory bank updates prompted before git commits via PreToolUse hook
 
 3. **Add Notes**: `/memory note "Important context for next session"`
 
@@ -216,13 +216,14 @@ The plugin uses Claude Code's native hook system via `.claude/settings.json`. Ea
 - Displays Memory Bank status
 - Shows tech stack summary
 
-### PostToolUse Hook
-**Location**: `.claude/hooks/postToolUse.js`
-**Trigger**: After Write, Edit, or Bash commands
+### PreToolUse Hook
+**Location**: `.claude/hooks/preToolUse.js`
+**Trigger**: Before `git add` commands
 **Action**:
-- Records file changes to session
-- Updates current task files
-- Tracks action type (created/modified/deleted)
+- Extracts files being staged from git add command
+- Retrieves current session data (files, notes, changes)
+- Instructs Claude to update memory bank before staging
+- Provides actionable directives rather than passive reminders
 
 ### UserPromptSubmit Hook
 **Location**: `.claude/hooks/userPromptSubmit.js`
@@ -238,6 +239,8 @@ The plugin uses a hybrid bridge approach:
 - `.claude/hooks/wrapper.js` - Bridge infrastructure for stdin/stdout
 - `src/hooks/*.js` - Original JavaScript implementations
 
+**Note**: The PreToolUse hook actively directs Claude to update documentation, rather than just showing passive reminders. This ensures memory bank stays current before code is committed.
+
 ## 🧠 How It Works
 
 ### Session Lifecycle
@@ -250,12 +253,14 @@ The plugin uses a hybrid bridge approach:
    → Display status
    ```
 
-2. **During Work** (Automatic)
+2. **During Work** (Manual with Hook Assistance)
    ```
-   You: Write/Edit files → PostToolUse hook fires
-   → Record file change
-   → Update session.recentChanges
-   → Add to session.currentTask.files
+   You: Write/Edit files → Work on features
+   You: git add <files> → PreToolUse hook fires
+   → Extract files being staged
+   → Retrieve session data
+   → Claude is instructed to update memory bank
+   → Proceed with git add after updates
    ```
 
 3. **Session End** (Manual)
@@ -267,23 +272,30 @@ The plugin uses a hybrid bridge approach:
    → Prompt to update memory-bank/ files
    ```
 
-### File Change Tracking
+### Pre-Commit Memory Update Flow
 
 ```javascript
-// Automatic tracking example:
+// Hook-assisted workflow example:
 You: (use Write tool to create src/api/users.ts)
+You: (make more changes)
+You: "Add, commit and push to git please"
 
-PostToolUse Hook:
+Claude: git add src/api/users.ts other/files.ts
+
+PreToolUse Hook fires before git add:
 {
-  file: "src/api/users.ts",
-  action: "created/updated",
-  timestamp: "2025-10-10T15:30:00Z",
-  description: "Write: created/updated"
+  toolName: "Bash",
+  command: "git add src/api/users.ts other/files.ts",
+  filesBeingStaged: ["src/api/users.ts", "other/files.ts"],
+  sessionData: {
+    notes: [...],
+    recentChanges: [...]
+  }
 }
 
-// Now visible in /memory show:
-Recent Changes:
-  [3:30 PM] created/updated: src/api/users.ts
+→ Claude receives directive to update memory bank
+→ Claude updates CURRENT.md, progress.md, etc.
+→ git add proceeds with updated documentation
 ```
 
 ## 📚 Best Practices
@@ -291,10 +303,11 @@ Recent Changes:
 ### Daily Workflow
 
 1. **Start**: Plugin auto-initializes ✅
-2. **Work**: Changes tracked automatically ✅
+2. **Work**: Make changes and edits as needed
 3. **Note**: Add context notes as you go
-4. **End**: Run `/memory end-session`
-5. **Document**: Update `memory-bank/` files
+4. **Commit**: Hook prompts memory bank updates before staging ✅
+5. **Document**: Update `memory-bank/` files (guided by hook)
+6. **End**: Run `/memory end-session` when done
 
 ### When to Update Documentation
 
@@ -345,7 +358,7 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 - [x] Plugin directory structure
 - [x] MemoryStore library (enhanced from existing memory-utils.js)
 - [x] SessionStart hook (auto-initialization)
-- [x] PostToolUse hook (file change tracking)
+- [x] PreToolUse hook (pre-commit memory bank updates)
 - [x] UserPromptSubmit hook (documentation reminders)
 - [x] All 9 commands (show, note, patterns, tech-stack, archive, clean, list-archives, end-session, checklist)
 - [x] Main index.js entry point
@@ -388,10 +401,10 @@ chmod +x .claude/hooks/*.js
 **Problem**: Plugin doesn't auto-start
 **Solution**: Check that `.claude/settings.json` properly registers the sessionStart hook
 
-### File Changes Not Tracked
+### Memory Bank Updates Not Triggered
 
-**Problem**: Edits not appearing in session
-**Solution**: Verify PostToolUse hook is registered in `.claude/settings.json`
+**Problem**: Claude not prompting to update memory bank before git add
+**Solution**: Verify PreToolUse hook is registered in `.claude/settings.json` and triggers on "git add" commands
 
 ### Can't Find Archives
 
