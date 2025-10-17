@@ -1,10 +1,8 @@
 {
   "hooks": {
     "sessionStart": [{
-      "hooks": [{
-        "type": "command",
-        "command": "node .claude/hooks/sessionStart.js"
-      }]
+      "type": "command",
+      "command": "node .claude/hooks/sessionStart.js"
     }],
     "preToolUse": [{
       "matcher": {
@@ -16,10 +14,8 @@
       }]
     }],
     "userPromptSubmit": [{
-      "hooks": [{
-        "type": "command",
-        "command": "node .claude/hooks/userPromptSubmit.js"
-      }]
+      "type": "command",
+      "command": "node .claude/hooks/userPromptSubmit.js"
     }]
   }
 }
