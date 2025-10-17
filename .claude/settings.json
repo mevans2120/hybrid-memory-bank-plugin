@@ -1,21 +1,35 @@
 {
   "hooks": {
-    "sessionStart": [{
-      "type": "command",
-      "command": "node .claude/hooks/sessionStart.js"
-    }],
-    "preToolUse": [{
-      "matcher": {
-        "tools": ["Bash"]
-      },
-      "hooks": [{
-        "type": "command",
-        "command": "node .claude/hooks/preToolUse.js"
-      }]
-    }],
-    "userPromptSubmit": [{
-      "type": "command",
-      "command": "node .claude/hooks/userPromptSubmit.js"
-    }]
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/sessionStart.js"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/preToolUse.js"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/userPromptSubmit.js"
+          }
+        ]
+      }
+    ]
   }
 }
