@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "sessionStart": "node .claude/hooks/sessionStart.js",
+    "postToolUse": "node .claude/hooks/postToolUse.js",
+    "userPromptSubmit": "node .claude/hooks/userPromptSubmit.js"
+  }
+}

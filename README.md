@@ -16,25 +16,30 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 ### Option 1: From GitHub (Recommended)
 
 ```bash
-# Add the marketplace
-/plugin marketplace add https://github.com/mevans2120/hybrid-memory-bank.git
+# Clone the repository
+git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git
+cd hybrid-memory-bank-plugin
 
-# Install the plugin
-/plugin install hybrid-memory-bank
+# Install dependencies
+npm install
+
+# The plugin hooks are automatically registered via .claude/settings.json
 ```
 
-### Option 2: Local Development
+### Option 2: Manual Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/mevans2120/hybrid-memory-bank.git
+# Clone to your project directory
+git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git .hybrid-memory-plugin
 
-# Add local marketplace
-/plugin marketplace add /path/to/hybrid-memory-bank
+# Install dependencies
+cd .hybrid-memory-plugin && npm install
 
-# Install the plugin
-/plugin install hybrid-memory-bank@hybrid-memory-bank-dev-marketplace
+# Copy the .claude directory to your project root
+cp -r .claude ../
 ```
+
+**Note**: The plugin now uses Claude Code's native hook system via `.claude/settings.json`. No additional plugin installation commands are needed.
 
 ## 🎯 Quick Start
 
@@ -160,8 +165,11 @@ Show documentation checklist template.
 
 ## 🔗 Hooks
 
+The plugin uses Claude Code's native hook system via `.claude/settings.json`. Each hook is a Node.js script that receives JSON via stdin and responds via stdout.
+
 ### SessionStart Hook
-**Trigger**: When Claude Code starts
+**Location**: `.claude/hooks/sessionStart.js`
+**Trigger**: When Claude Code starts a new session
 **Action**:
 - Initializes `.claude-memory/` directories
 - Cleans expired sessions
@@ -170,6 +178,7 @@ Show documentation checklist template.
 - Shows tech stack summary
 
 ### PostToolUse Hook
+**Location**: `.claude/hooks/postToolUse.js`
 **Trigger**: After Write, Edit, or Bash commands
 **Action**:
 - Records file changes to session
@@ -177,11 +186,18 @@ Show documentation checklist template.
 - Tracks action type (created/modified/deleted)
 
 ### UserPromptSubmit Hook
+**Location**: `.claude/hooks/userPromptSubmit.js`
 **Trigger**: When user says "done", "finished", "goodbye"
 **Action**:
 - Shows documentation reminder
 - Suggests which memory-bank/ files to update
 - Recommends `/memory end-session` command
+
+### Hook Architecture
+The plugin uses a hybrid bridge approach:
+- `.claude/hooks/*.js` - Shell wrappers that Claude Code calls
+- `.claude/hooks/wrapper.js` - Bridge infrastructure for stdin/stdout
+- `src/hooks/*.js` - Original JavaScript implementations
 
 ## 🧠 How It Works
 
@@ -285,7 +301,7 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 
 ## 🔧 Development Status
 
-### ✅ Completed (v0.1.0)
+### ✅ Completed (v0.2.0)
 
 - [x] Plugin directory structure
 - [x] MemoryStore library (enhanced from existing memory-utils.js)
@@ -294,10 +310,12 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 - [x] UserPromptSubmit hook (documentation reminders)
 - [x] All 9 commands (show, note, patterns, tech-stack, archive, clean, list-archives, end-session, checklist)
 - [x] Main index.js entry point
+- [x] Integration with Claude Code hook system via shell bridge
+- [x] Hook wrappers for stdin/stdout communication
+- [x] Automatic hook registration via .claude/settings.json
 
 ### 🚧 In Progress
 
-- [ ] Integration with Claude Code plugin system (waiting for API availability)
 - [ ] Memory Manager agent (proactive pattern learning)
 - [ ] Documentation Writer agent (auto-generate summaries)
 - [ ] Integration tests
@@ -312,15 +330,23 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 
 ## 🐛 Troubleshooting
 
+### Hooks Not Working
+
+**Problem**: Hooks don't seem to trigger
+**Solution**: Ensure `.claude/settings.json` exists and hooks are executable:
+```bash
+chmod +x .claude/hooks/*.js
+```
+
 ### Session Not Initializing
 
 **Problem**: Plugin doesn't auto-start
-**Solution**: Ensure Claude Code plugin system is enabled
+**Solution**: Check that `.claude/settings.json` properly registers the sessionStart hook
 
 ### File Changes Not Tracked
 
 **Problem**: Edits not appearing in session
-**Solution**: Verify PostToolUse hook is enabled in plugin.json
+**Solution**: Verify PostToolUse hook is registered in `.claude/settings.json`
 
 ### Can't Find Archives
 
@@ -330,8 +356,11 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 ## 📖 Documentation
 
 ### File Structure
+- `.claude/settings.json` - Hook registration for Claude Code
+- `.claude/hooks/*.js` - Shell wrapper scripts for hooks
+- `.claude/hooks/wrapper.js` - Bridge infrastructure for stdin/stdout
 - `src/lib/memoryStore.js` - Core memory operations
-- `src/hooks/` - SessionStart, PostToolUse, UserPromptSubmit
+- `src/hooks/` - Original JavaScript implementations
 - `src/commands/` - All 9 slash commands
 - `src/index.js` - Main plugin entry point
 
@@ -382,4 +411,4 @@ MIT License
 
 ---
 
-**Status**: Development Complete (v0.1.0) - Ready for Claude Code plugin integration testing
+**Status**: v0.2.0 - Working with Claude Code hook system via hybrid bridge
