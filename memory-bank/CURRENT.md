@@ -1,23 +1,26 @@
 # Current Project Status
 
 ## Overview
-<!-- Brief description of the project -->
+Hybrid Memory Bank plugin for Claude Code - combines session memory with memory bank documentation
 
 ## Current Focus
-<!-- What you're working on right now -->
+Hook behavior refinement and testing
 
 ## Active Tasks
-- [ ] Task 1
-- [ ] Task 2
+- [x] Refine preToolUse hook behavior
+- [x] Refine userPromptSubmit hook behavior
 
 ## Recent Changes
-<!-- What was recently completed -->
+- **Hook Behavior Updates**: Modified both hooks to be more effective
+  - `preToolUse.js`: Now triggers on git status (gentle reminder mode)
+  - `userPromptSubmit.js`: Fires on every prompt, checks git status, provides actionable instructions
 
 ## Next Steps
-<!-- What's coming up next -->
+- Test hooks in real-world usage
+- Monitor effectiveness of new behavior
 
 ## Known Issues
-<!-- Any blockers or problems to be aware of -->
+None at this time
 
 ---
 *Last updated: 2025-10-17*

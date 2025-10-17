@@ -1,8 +1,8 @@
 /**
  * PreToolUse Hook
  *
- * Triggers before git add commands to prompt memory bank updates
- * Reminds user to update documentation before staging changes
+ * Triggers before git status commands to remind about memory bank updates
+ * Provides a gentle reminder to update session memory before committing
  */
 
 const MemoryStore = require('../lib/memoryStore');
@@ -10,18 +10,18 @@ const fs = require('fs').promises;
 const path = require('path');
 
 /**
- * Check if this is a git add command
+ * Check if this is a git status command
  */
-function isGitAdd(toolName, params) {
+function isGitStatus(toolName, params) {
   if (toolName !== 'Bash') return false;
   const command = params.command || '';
-  return /git\s+add/.test(command);
+  return /git\s+status/.test(command);
 }
 
 /**
  * Generate actionable instruction for Claude to update memory bank
  */
-async function generateMemoryUpdateInstruction(session, workingDirectory, gitCommand) {
+async function generateMemoryUpdateInstruction(session, workingDirectory) {
   const instruction = {
     message: '',
     sessionData: session,
@@ -30,40 +30,30 @@ async function generateMemoryUpdateInstruction(session, workingDirectory, gitCom
 
   let message = '\n';
   message += '━'.repeat(60) + '\n';
-  message += '🤖 INSTRUCTION: Update Memory Bank Before Git Operation\n';
+  message += '🧠 REMINDER: Consider Updating Memory Bank\n';
   message += '━'.repeat(60) + '\n\n';
-
-  message += 'Claude, before proceeding with the git command, you must:\n\n';
 
   // Check session activity
   const recentChanges = session?.recentChanges || [];
   const hasChanges = recentChanges.length > 0;
 
-  message += '1. Update .claude-memory/session/current.json with:\n';
-
   if (hasChanges) {
-    message += '   • Add any new file changes to recentChanges array\n';
+    message += 'If you are about to commit changes, consider updating:\n\n';
+    message += '1. .claude-memory/session/current.json:\n';
     message += '   • Update currentTask.files with files being committed\n';
+    message += '   • Set currentTask.progress appropriately\n';
+    message += '   • Add contextNotes about what was accomplished\n\n';
     instruction.filesToUpdate.push('.claude-memory/session/current.json');
+
+    // Check if feature work
+    if (session?.currentTask?.feature) {
+      message += '2. Document the feature work in session notes\n\n';
+    }
+  } else {
+    message += 'No recent changes detected in session memory.\n';
+    message += 'If you have made changes, consider updating the session.\n\n';
   }
 
-  message += '   • Set currentTask.progress appropriately\n';
-  message += '   • Add contextNotes about what was accomplished\n\n';
-
-  // Extract files from git add command
-  const gitAddMatch = gitCommand.match(/git\s+add\s+(.+)/);
-  if (gitAddMatch) {
-    const filesBeingAdded = gitAddMatch[1].split(/\s+/).filter(f => f && f !== '&&');
-    message += `2. Files being staged: ${filesBeingAdded.join(', ')}\n`;
-    message += '   Ensure these are reflected in the session memory\n\n';
-  }
-
-  // Check if feature work
-  if (session?.currentTask?.feature) {
-    message += '3. Document the feature work in session notes\n\n';
-  }
-
-  message += 'After updating the memory, proceed with the git operation.\n';
   message += '━'.repeat(60) + '\n\n';
 
   instruction.message = message;
@@ -76,9 +66,9 @@ async function generateMemoryUpdateInstruction(session, workingDirectory, gitCom
 async function onPreToolUse(context) {
   const { toolName, parameters, workingDirectory, logger } = context;
 
-  // Only care about git add commands
-  if (!isGitAdd(toolName, parameters)) {
-    return { triggered: false, reason: 'not_git_add' };
+  // Only care about git status commands
+  if (!isGitStatus(toolName, parameters)) {
+    return { triggered: false, reason: 'not_git_status' };
   }
 
   const memory = new MemoryStore(workingDirectory);
@@ -89,8 +79,7 @@ async function onPreToolUse(context) {
     // Generate instruction for Claude to update memory bank
     const instruction = await generateMemoryUpdateInstruction(
       session,
-      workingDirectory,
-      parameters.command
+      workingDirectory
     );
 
     // Log the instruction so it appears in Claude's context

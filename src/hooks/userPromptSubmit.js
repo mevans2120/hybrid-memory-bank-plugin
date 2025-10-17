@@ -1,67 +1,121 @@
 /**
  * UserPromptSubmit Hook
  *
- * Detects when user is finishing work and reminds about documentation
- * Triggers on patterns like "done", "finished", "goodbye", etc.
+ * Fires on every user prompt to track changes and remind about memory bank updates
+ * Provides actionable instructions to Claude when changes need to be documented
  */
 
 const MemoryStore = require('../lib/memoryStore');
 const fs = require('fs').promises;
 const path = require('path');
+const { execSync } = require('child_process');
 
 /**
- * Check if prompt indicates session ending
+ * Get git status information
  */
-function isEndingPrompt(prompt) {
-  const endingPatterns = [
-    /\b(done|finished|complete|completed)\b/i,
-    /\b(goodbye|bye|see you|thanks|thank you)\b/i,
-    /\b(commit|push|deploy)\b.*\b(done|finished)\b/i,
-    /that'?s? (it|all)/i,
-  ];
+function getGitStatus(workingDirectory) {
+  try {
+    // Check if we're in a git repo
+    execSync('git rev-parse --git-dir', {
+      cwd: workingDirectory,
+      stdio: 'pipe'
+    });
 
-  return endingPatterns.some(pattern => pattern.test(prompt));
+    // Get modified, added, and untracked files
+    const status = execSync('git status --porcelain', {
+      cwd: workingDirectory,
+      encoding: 'utf8',
+      stdio: 'pipe'
+    });
+
+    const lines = status.trim().split('\n').filter(l => l);
+    const files = lines.map(line => {
+      const statusCode = line.substring(0, 2);
+      const file = line.substring(3);
+      return { status: statusCode, file };
+    });
+
+    return {
+      hasChanges: files.length > 0,
+      files,
+      modifiedCount: files.filter(f => f.status.includes('M')).length,
+      addedCount: files.filter(f => f.status.includes('A')).length,
+      untrackedCount: files.filter(f => f.status.includes('??')).length
+    };
+  } catch (error) {
+    return { hasChanges: false, files: [], error: error.message };
+  }
 }
 
 /**
- * Generate documentation reminder based on session activity
+ * Generate actionable instruction for Claude
  */
-function generateReminder(session, recentChanges) {
-  let reminder = '\n';
-  reminder += '━'.repeat(60) + '\n';
-  reminder += '📝 DOCUMENTATION REMINDER\n';
-  reminder += '━'.repeat(60) + '\n\n';
+async function generateInstruction(session, gitStatus, workingDirectory) {
+  let message = '\n';
+  message += '━'.repeat(60) + '\n';
 
-  reminder += 'Consider updating these files before ending:\n\n';
+  // Check if there are uncommitted changes
+  if (!gitStatus.hasChanges) {
+    message += '✅ MEMORY BANK STATUS: UP TO DATE\n';
+    message += '━'.repeat(60) + '\n\n';
+    message += 'No uncommitted changes detected.\n';
+    message += 'Memory bank updates are not required at this time.\n';
+    message += '━'.repeat(60) + '\n\n';
 
-  // Check if significant work was done
-  const hasSignificantChanges = recentChanges.length > 5;
-  const hasTaskProgress = session.currentTask.progress !== 'not_started';
-
-  if (hasTaskProgress || hasSignificantChanges) {
-    reminder += '   ✓ memory-bank/CURRENT.md\n';
-    reminder += '     → Update current project state\n\n';
-
-    reminder += '   ✓ memory-bank/progress.md\n';
-    reminder += '     → Add session summary with timestamp\n\n';
+    return {
+      message,
+      actionRequired: false,
+      reason: 'no_changes'
+    };
   }
 
-  // Check if major feature or deployment
-  if (session.currentTask.feature && session.currentTask.progress === 'completed') {
-    reminder += '   ✓ memory-bank/CHANGELOG.md\n';
-    reminder += '     → Document completed feature\n\n';
+  // There are changes - instruct Claude to update memory bank
+  message += '🧠 ACTION REQUIRED: Update Memory Bank\n';
+  message += '━'.repeat(60) + '\n\n';
+  message += `Detected ${gitStatus.files.length} uncommitted file(s):\n`;
+  message += `  • Modified: ${gitStatus.modifiedCount}\n`;
+  message += `  • Added: ${gitStatus.addedCount}\n`;
+  message += `  • Untracked: ${gitStatus.untrackedCount}\n\n`;
+
+  message += '📝 INSTRUCTIONS FOR CLAUDE:\n\n';
+  message += 'You MUST update the following files:\n\n';
+
+  const filesToUpdate = [];
+
+  // Always update session current.json
+  message += '1. .claude-memory/session/current.json\n';
+  message += '   → Add changed files to currentTask.files array\n';
+  message += '   → Update currentTask.progress (in_progress, completed, blocked)\n';
+  message += '   → Add contextNotes describing what was done\n\n';
+  filesToUpdate.push('.claude-memory/session/current.json');
+
+  // Update memory bank files
+  message += '2. memory-bank/CURRENT.md\n';
+  message += '   → Update "Recent Changes" section with what was accomplished\n';
+  message += '   → Update "Active Tasks" to reflect current state\n\n';
+  filesToUpdate.push('memory-bank/CURRENT.md');
+
+  message += '3. memory-bank/progress.md\n';
+  message += '   → Add a new entry with timestamp and brief summary\n';
+  message += '   → Include list of files changed\n\n';
+  filesToUpdate.push('memory-bank/progress.md');
+
+  // If there's a feature in progress, suggest changelog
+  if (session?.currentTask?.feature) {
+    message += '4. memory-bank/CHANGELOG.md (if feature is complete)\n';
+    message += '   → Document the completed feature\n\n';
+    filesToUpdate.push('memory-bank/CHANGELOG.md');
   }
 
-  // Check if architectural changes
-  if (recentChanges.some(c => c.file.includes('architecture') || c.file.includes('schema'))) {
-    reminder += '   ✓ memory-bank/ARCHITECTURE.md\n';
-    reminder += '     → Document architectural decisions\n\n';
-  }
+  message += '⚠️  DO NOT COMMIT until memory bank is updated.\n';
+  message += '━'.repeat(60) + '\n\n';
 
-  reminder += 'Use /memory end-session for guided session end\n';
-  reminder += '━'.repeat(60) + '\n\n';
-
-  return reminder;
+  return {
+    message,
+    actionRequired: true,
+    filesToUpdate,
+    gitStatus
+  };
 }
 
 /**
@@ -70,32 +124,31 @@ function generateReminder(session, recentChanges) {
 async function onUserPromptSubmit(context) {
   const { prompt, workingDirectory, logger } = context;
 
-  if (!isEndingPrompt(prompt)) {
-    return { triggered: false, reason: 'not_ending_prompt' };
-  }
-
   const memory = new MemoryStore(workingDirectory);
 
   try {
+    // Get current git status
+    const gitStatus = getGitStatus(workingDirectory);
+
+    // Get current session
     const session = await memory.getCurrentSession();
     if (!session) {
       return { triggered: false, reason: 'no_active_session' };
     }
 
-    const recentChanges = session.recentChanges || [];
+    // Generate instruction based on git status
+    const instruction = await generateInstruction(session, gitStatus, workingDirectory);
 
-    // Only show reminder if there's actual work to document
-    if (recentChanges.length === 0 && session.currentTask.progress === 'not_started') {
-      return { triggered: false, reason: 'no_work_to_document' };
-    }
-
-    const reminder = generateReminder(session, recentChanges);
-    logger.info(reminder);
+    // Log the instruction so Claude sees it
+    logger.info(instruction.message);
 
     return {
       triggered: true,
       sessionId: session.sessionId,
-      changesCount: recentChanges.length
+      actionRequired: instruction.actionRequired,
+      filesToUpdate: instruction.filesToUpdate,
+      gitStatus: instruction.gitStatus,
+      reason: instruction.reason
     };
 
   } catch (error) {
