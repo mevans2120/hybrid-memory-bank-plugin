@@ -20,16 +20,6 @@
           }
         ]
       }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/userPromptSubmit.js"
-          }
-        ]
-      }
     ]
   }
 }

@@ -5,7 +5,6 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 ## 🚀 Features
 
 - **Auto Session Management**: Automatically initializes and archives sessions
-- **Proactive Memory Tracking**: UserPromptSubmit hook monitors git status on every prompt and guides memory bank updates
 - **Pattern Learning**: Remembers code patterns and conventions
 - **Smart Reminders**: PreToolUse hook provides gentle reminders when running git status
 - **Cross-Platform**: Pure Node.js, works on Windows, Mac, and Linux
@@ -93,7 +92,7 @@ chmod +x ../.claude/hooks/*.js
    - Displays current session state
    - Shows Memory Bank status from `memory-bank/CURRENT.md`
 
-2. **Work Normally**: UserPromptSubmit hook monitors changes on every prompt and provides actionable instructions
+2. **Work Normally**: Use git status to get gentle reminders about memory bank updates via PreToolUse hook
 
 3. **Add Notes**: `/memory note "Important context for next session"`
 
@@ -229,18 +228,7 @@ The plugin uses Claude Code's native hook system via `.claude/settings.json`. Ea
 - Checks current session data
 - Provides gentle reminder to consider updating memory bank
 - Non-intrusive, informational approach
-
-### UserPromptSubmit Hook
-**Location**: `.claude/hooks/userPromptSubmit.js`
-**Trigger**: On every user prompt
-**Action**:
-- Automatically detects git status (uncommitted changes)
-- When changes detected, provides actionable instructions to Claude:
-  - Update `.claude-memory/session/current.json`
-  - Update `memory-bank/CURRENT.md`
-  - Update `memory-bank/progress.md`
-- When no changes, confirms memory bank is up to date
-- Proactive approach ensures memory stays current
+- Suggests updating `.claude-memory/session/current.json` and `memory-bank/` files
 
 ### Hook Architecture
 The plugin uses a hybrid bridge approach:
@@ -248,7 +236,7 @@ The plugin uses a hybrid bridge approach:
 - `.claude/hooks/wrapper.js` - Bridge infrastructure for stdin/stdout
 - `src/hooks/*.js` - Original JavaScript implementations
 
-**Note**: The UserPromptSubmit hook actively monitors git status on every prompt and directs Claude to update documentation when changes are detected. The PreToolUse hook provides gentle reminders when running git status. This dual approach ensures memory bank stays current throughout the workflow.
+**Note**: The PreToolUse hook provides gentle reminders when running git status, helping keep the memory bank current without being intrusive.
 
 ## 🧠 How It Works
 
@@ -264,16 +252,12 @@ The plugin uses a hybrid bridge approach:
    → Display status
    ```
 
-2. **During Work** (Automatic Hook Assistance)
+2. **During Work** (Manual with Hook Assistance)
    ```
    You: Write/Edit files → Work on features
-   You: Any prompt → UserPromptSubmit hook fires
-   → Checks git status for uncommitted changes
-   → If changes found, instructs Claude to update memory bank
-   → If no changes, confirms memory bank is up to date
-
    You: git status → PreToolUse hook fires
    → Provides gentle reminder about memory bank
+   → Suggests updating session and memory-bank files
    → Informational, non-blocking
    ```
 
@@ -286,32 +270,20 @@ The plugin uses a hybrid bridge approach:
    → Prompt to update memory-bank/ files
    ```
 
-### Proactive Memory Update Flow
+### Memory Update Workflow
 
 ```javascript
 // Hook-assisted workflow example:
 You: (use Write tool to create src/api/users.ts)
 You: (make more changes)
-You: "Can you commit and push please"
+You: "Can you run git status"
 
-UserPromptSubmit Hook fires on your prompt:
-{
-  gitStatus: {
-    hasChanges: true,
-    files: [
-      { status: "M ", file: "src/api/users.ts" },
-      { status: " M", file: "other/files.ts" }
-    ],
-    modifiedCount: 2
-  },
-  actionRequired: true
-}
+PreToolUse Hook fires before git status:
+→ Provides gentle reminder to update memory bank
+→ Suggests updating session and memory-bank files
+→ Non-blocking, informational
 
-→ Claude receives instruction to update memory bank first
-→ Claude updates .claude-memory/session/current.json
-→ Claude updates memory-bank/CURRENT.md
-→ Claude updates memory-bank/progress.md
-→ Then proceeds with git add, commit, push
+You can then update memory bank files manually or ask Claude to help
 ```
 
 ## 📚 Best Practices
@@ -321,8 +293,8 @@ UserPromptSubmit Hook fires on your prompt:
 1. **Start**: Plugin auto-initializes ✅
 2. **Work**: Make changes and edits as needed
 3. **Note**: Add context notes as you go
-4. **Automatic Tracking**: UserPromptSubmit hook monitors changes on every prompt ✅
-5. **Document**: Memory bank updates guided by hook instructions
+4. **Check Status**: Run git status to get gentle reminders from PreToolUse hook
+5. **Document**: Update memory bank files (CURRENT.md, progress.md)
 6. **End**: Run `/memory end-session` when done
 
 ### When to Update Documentation
@@ -419,8 +391,8 @@ chmod +x .claude/hooks/*.js
 
 ### Memory Bank Updates Not Triggered
 
-**Problem**: Claude not prompting to update memory bank when changes detected
-**Solution**: Verify UserPromptSubmit hook is registered in `.claude/settings.json` and fires on every user prompt
+**Problem**: Not getting reminders to update memory bank
+**Solution**: Run `git status` to trigger the PreToolUse hook which provides gentle reminders
 
 ### Can't Find Archives
 
