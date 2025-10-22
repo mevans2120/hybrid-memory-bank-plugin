@@ -6,7 +6,7 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 
 - **Auto Session Management**: Automatically initializes and archives sessions
 - **Pattern Learning**: Remembers code patterns and conventions
-- **Smart Reminders**: PreToolUse hook provides gentle reminders when running git status
+- **Smart Auto-Updates**: PostToolUse hook automatically updates memory bank after git status
 - **Cross-Platform**: Pure Node.js, works on Windows, Mac, and Linux
 - **Zero Config**: Works out of the box with sensible defaults
 
@@ -92,7 +92,7 @@ chmod +x ../.claude/hooks/*.js
    - Displays current session state
    - Shows Memory Bank status from `memory-bank/CURRENT.md`
 
-2. **Work Normally**: Use git status to get gentle reminders about memory bank updates via PreToolUse hook
+2. **Work Normally**: Git status automatically updates memory bank via PostToolUse hook
 
 3. **Add Notes**: `/memory note "Important context for next session"`
 
@@ -221,14 +221,14 @@ The plugin uses Claude Code's native hook system via `.claude/settings.json`. Ea
 - Displays Memory Bank status
 - Shows tech stack summary
 
-### PreToolUse Hook
-**Location**: `.claude/hooks/preToolUse.js`
-**Trigger**: Before `git status` commands
+### PostToolUse Hook
+**Location**: `.claude/hooks/postToolUse.js`
+**Trigger**: After `git status` commands
 **Action**:
-- Checks current session data
-- Provides gentle reminder to consider updating memory bank
-- Non-intrusive, informational approach
-- Suggests updating `.claude-memory/session/current.json` and `memory-bank/` files
+- Parses git status output to detect changed files
+- Automatically updates `.claude-memory/session/current.json` with changed files
+- Automatically updates `memory-bank/CURRENT.md` with Recent Changes entry
+- Provides informational summary of updates made
 
 ### Hook Architecture
 The plugin uses a hybrid bridge approach:
@@ -236,7 +236,7 @@ The plugin uses a hybrid bridge approach:
 - `.claude/hooks/wrapper.js` - Bridge infrastructure for stdin/stdout
 - `src/hooks/*.js` - Original JavaScript implementations
 
-**Note**: The PreToolUse hook provides gentle reminders when running git status, helping keep the memory bank current without being intrusive.
+**Note**: The PostToolUse hook automatically updates memory bank after git status, keeping documentation current without manual intervention.
 
 ## 🧠 How It Works
 
@@ -252,13 +252,13 @@ The plugin uses a hybrid bridge approach:
    → Display status
    ```
 
-2. **During Work** (Manual with Hook Assistance)
+2. **During Work** (Automatic Updates)
    ```
    You: Write/Edit files → Work on features
-   You: git status → PreToolUse hook fires
-   → Provides gentle reminder about memory bank
-   → Suggests updating session and memory-bank files
-   → Informational, non-blocking
+   You: git status → PostToolUse hook fires
+   → Parses git status output for changed files
+   → Automatically updates session and memory-bank files
+   → Displays informational summary
    ```
 
 3. **Session End** (Manual)
@@ -273,17 +273,16 @@ The plugin uses a hybrid bridge approach:
 ### Memory Update Workflow
 
 ```javascript
-// Hook-assisted workflow example:
+// Automatic update workflow:
 You: (use Write tool to create src/api/users.ts)
 You: (make more changes)
 You: "Can you run git status"
 
-PreToolUse Hook fires before git status:
-→ Provides gentle reminder to update memory bank
-→ Suggests updating session and memory-bank files
-→ Non-blocking, informational
-
-You can then update memory bank files manually or ask Claude to help
+PostToolUse Hook fires after git status:
+→ Parses git status output for changed files
+→ Automatically updates .claude-memory/session/current.json
+→ Automatically updates memory-bank/CURRENT.md
+→ Displays summary of updates made
 ```
 
 ## 📚 Best Practices
@@ -293,8 +292,8 @@ You can then update memory bank files manually or ask Claude to help
 1. **Start**: Plugin auto-initializes ✅
 2. **Work**: Make changes and edits as needed
 3. **Note**: Add context notes as you go
-4. **Check Status**: Run git status to get gentle reminders from PreToolUse hook
-5. **Document**: Update memory bank files (CURRENT.md, progress.md)
+4. **Check Status**: Run git status - PostToolUse hook automatically updates memory bank
+5. **Document**: Memory bank auto-updated; manually enhance if needed
 6. **End**: Run `/memory end-session` when done
 
 ### When to Update Documentation
@@ -346,8 +345,7 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 - [x] Plugin directory structure
 - [x] MemoryStore library (enhanced from existing memory-utils.js)
 - [x] SessionStart hook (auto-initialization)
-- [x] PreToolUse hook (pre-commit memory bank updates)
-- [x] UserPromptSubmit hook (documentation reminders)
+- [x] PostToolUse hook (automatic memory bank updates after git status)
 - [x] All 9 commands (show, note, patterns, tech-stack, archive, clean, list-archives, end-session, checklist)
 - [x] Main index.js entry point
 - [x] Integration with Claude Code hook system via shell bridge
@@ -391,8 +389,11 @@ chmod +x .claude/hooks/*.js
 
 ### Memory Bank Updates Not Triggered
 
-**Problem**: Not getting reminders to update memory bank
-**Solution**: Run `git status` to trigger the PreToolUse hook which provides gentle reminders
+**Problem**: Memory bank not auto-updating after git status
+**Solution**:
+1. Ensure hooks are enabled in Claude Code settings (`"hooksEnabled": true`)
+2. Restart Claude Code session for PostToolUse hook to activate
+3. Run `git status` to trigger automatic memory bank updates
 
 ### Can't Find Archives
 
