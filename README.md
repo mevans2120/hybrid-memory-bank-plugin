@@ -12,72 +12,121 @@ Hybrid memory system for Claude Code that combines automated JSON-based memory w
 
 ## 📦 Installation
 
-### For New Users
+### Prerequisites
 
-#### Option 1: From GitHub (Recommended)
+Before installing, ensure you have:
+- Claude Code installed and working
+- Node.js (v16 or higher)
+- Git
+
+### Step-by-Step Installation
+
+#### Step 1: Enable Hooks in Claude Code
+
+**⚠️ CRITICAL: This must be done FIRST or the plugin won't work!**
+
+1. Open your **global** Claude Code settings file:
+   - **Mac/Linux**: `~/.config/claude-code/settings.json`
+   - **Windows**: `%APPDATA%/claude-code/settings.json`
+
+2. Add or modify the following setting:
+   ```json
+   {
+     "hooksEnabled": true
+   }
+   ```
+
+3. Save the file and restart Claude Code
+
+#### Step 2: Install the Plugin in Your Project
+
+Navigate to the root of your project where you want to use the memory bank:
 
 ```bash
-# Clone the repository
+# Navigate to your project root
+cd /path/to/your/project
+
+# Clone the plugin (choose one option below)
+```
+
+**Option A: As a subdirectory (Recommended)**
+```bash
+git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git .hybrid-memory-bank
+cd .hybrid-memory-bank
+npm install
+chmod +x .claude/hooks/*.js
+cd ..
+```
+
+**Option B: Direct installation**
+```bash
 git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git
 cd hybrid-memory-bank-plugin
-
-# Install dependencies
 npm install
-
-# Make hook scripts executable
 chmod +x .claude/hooks/*.js
-
-# The plugin hooks are automatically registered via .claude/settings.json
+cd ..
 ```
 
-### For Existing Users (Updating from v0.1.0)
+#### Step 3: Set Up Hook Configuration
 
-If you already have the plugin installed, update to v0.2.0 with these steps:
+Copy the `.claude` directory to your project root (if not already there):
 
 ```bash
-# Navigate to your plugin directory
-cd hybrid-memory-bank-plugin
+# From your project root
+cp -r .hybrid-memory-bank/.claude .
+# OR
+cp -r hybrid-memory-bank-plugin/.claude .
+```
 
-# Pull the latest changes
+**Verify the setup:**
+```bash
+ls -la .claude/
+# You should see:
+# - settings.json
+# - hooks/ directory with .js files
+```
+
+#### Step 4: Make Hooks Executable
+
+Ensure all hook scripts have execute permissions:
+
+```bash
+chmod +x .claude/hooks/*.js
+```
+
+#### Step 5: Verify Installation
+
+1. **Start a new Claude Code session** in your project directory
+2. You should see the session startup message with:
+   ```
+   🚀 HYBRID MEMORY BANK - SESSION STARTED
+   ```
+3. If you see this, the plugin is working!
+
+### Updating an Existing Installation
+
+```bash
+# Navigate to plugin directory
+cd .hybrid-memory-bank  # or hybrid-memory-bank-plugin
+
+# Pull latest changes
 git pull
 
-# Make the new hook scripts executable
+# Ensure hooks are executable
 chmod +x .claude/hooks/*.js
 
-# Restart your Claude Code session for hooks to take effect
+# Restart Claude Code
 ```
 
-**Note**: No new dependencies were added in v0.2.0, so `npm install` is not required.
+### Quick Verification Checklist
 
-**Important**: The plugin now uses Claude Code's native hook system. The old plugin API approach no longer works.
-
-### ⚠️ Important: Enable Hooks in Claude Code
-
-**You must enable hooks in your Claude Code settings for the plugin to work:**
-
-1. Open Claude Code settings (use `/config` command or manually edit)
-2. Ensure hooks are enabled by setting `"hooksEnabled": true`
-3. Restart Claude Code after making this change
-
-Without hooks enabled, the plugin will not function as none of the automatic tracking, initialization, or documentation reminders will trigger.
-
-### Option 2: Manual Installation
-
-```bash
-# Clone to your project directory
-git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git .hybrid-memory-plugin
-
-# Install dependencies
-cd .hybrid-memory-plugin && npm install
-
-# Copy the .claude directory to your project root
-cp -r .claude ../
-
-# Make hook scripts executable
-chmod +x ../.claude/hooks/*.js
-```
-
-**Note**: The plugin now uses Claude Code's native hook system via `.claude/settings.json`. No additional plugin installation commands are needed.
+- [ ] Hooks enabled in global Claude Code settings (`hooksEnabled: true`)
+- [ ] Plugin cloned to project directory
+- [ ] `npm install` completed successfully
+- [ ] Hook scripts are executable (`chmod +x .claude/hooks/*.js`)
+- [ ] `.claude/settings.json` exists in project root
+- [ ] Claude Code restarted after setup
+- [ ] Session startup message appears when starting Claude Code
 
 ## 🎯 Quick Start
 
@@ -352,12 +401,12 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 - [x] Hook wrappers for stdin/stdout communication
 - [x] Automatic hook registration via .claude/settings.json
 
-### 🚧 In Progress
+### ✅ Also Completed
 
-- [ ] Memory Manager agent (proactive pattern learning)
-- [ ] Documentation Writer agent (auto-generate summaries)
-- [ ] Integration tests
-- [ ] Example project template
+- [x] Memory Manager agent (proactive pattern learning)
+- [x] Documentation Writer agent (auto-generate summaries)
+- [x] Integration tests
+- [x] Example project template
 
 ### 🔮 Future Enhancements
 
@@ -368,37 +417,208 @@ Create `memory-bank/SESSION_CHECKLIST.md`:
 
 ## 🐛 Troubleshooting
 
-### Hooks Not Working
+### No Session Startup Message
 
-**Problem**: Hooks don't seem to trigger
+**Problem**: You don't see the "🚀 HYBRID MEMORY BANK - SESSION STARTED" message when starting Claude Code
+
+**Solutions**:
+
+1. **Check global hooks are enabled:**
+   ```bash
+   # Mac/Linux
+   cat ~/.config/claude-code/settings.json
+
+   # Windows
+   type %APPDATA%/claude-code/settings.json
+   ```
+   Should contain: `"hooksEnabled": true`
+
+2. **Verify .claude directory exists in project root:**
+   ```bash
+   ls -la .claude/
+   ```
+   Should show `settings.json` and `hooks/` directory
+
+3. **Check .claude/settings.json configuration:**
+   ```bash
+   cat .claude/settings.json
+   ```
+   Should contain hook registrations for sessionStart and postToolUse
+
+4. **Ensure hook scripts are executable:**
+   ```bash
+   ls -l .claude/hooks/
+   chmod +x .claude/hooks/*.js
+   ```
+
+5. **Restart Claude Code** - Hooks are loaded at startup
+
+### Hooks Not Triggering
+
+**Problem**: Hooks don't seem to fire at all
+
+**Diagnostic Steps**:
+
+1. **Test if hooks are enabled globally:**
+   ```bash
+   # Check global settings
+   cat ~/.config/claude-code/settings.json | grep hooksEnabled
+   ```
+
+2. **Verify hook scripts exist and are executable:**
+   ```bash
+   ls -lh .claude/hooks/
+   # All .js files should have 'x' permission
+   ```
+
+3. **Check for syntax errors in hook scripts:**
+   ```bash
+   node .claude/hooks/sessionStart.js
+   # Should not show syntax errors
+   ```
+
+4. **Ensure you're in the correct directory:**
+   Claude Code must be started from the project root where `.claude/` exists
+
+### Permission Denied Errors
+
+**Problem**: Getting "Permission denied" errors when hooks try to run
+
 **Solution**:
-1. **First, ensure hooks are enabled in Claude Code settings:**
-   - Open Claude Code settings with `/config` command
-   - Set `"hooksEnabled": true`
-   - Restart Claude Code
-2. Ensure `.claude/settings.json` exists and has correct hook configuration
-3. Make sure hook scripts are executable:
 ```bash
+# Make all hook scripts executable
 chmod +x .claude/hooks/*.js
+
+# Verify permissions
+ls -l .claude/hooks/
+# Should show -rwxr-xr-x or similar
 ```
 
-### Session Not Initializing
+### Plugin Directory Not Found
 
-**Problem**: Plugin doesn't auto-start
-**Solution**: Check that `.claude/settings.json` properly registers the sessionStart hook
+**Problem**: Commands fail with "directory not found" errors
 
-### Memory Bank Updates Not Triggered
-
-**Problem**: Memory bank not auto-updating after git status
 **Solution**:
-1. Ensure hooks are enabled in Claude Code settings (`"hooksEnabled": true`)
-2. Restart Claude Code session for PostToolUse hook to activate
-3. Run `git status` to trigger automatic memory bank updates
+1. **Check plugin installation location:**
+   ```bash
+   ls -la | grep hybrid-memory
+   # Should show .hybrid-memory-bank or hybrid-memory-bank-plugin
+   ```
 
-### Can't Find Archives
+2. **Verify .claude directory was copied:**
+   ```bash
+   ls -la .claude/
+   ```
 
-**Problem**: `/memory list-archives` shows nothing
-**Solution**: Sessions archived after 24h or use `/memory archive` manually
+3. **Re-copy .claude directory if missing:**
+   ```bash
+   cp -r .hybrid-memory-bank/.claude .
+   # or
+   cp -r hybrid-memory-bank-plugin/.claude .
+   ```
+
+### Memory Bank Not Auto-Updating
+
+**Problem**: Memory bank doesn't update after running `git status`
+
+**Solutions**:
+
+1. **Verify PostToolUse hook is registered:**
+   ```bash
+   cat .claude/settings.json | grep postToolUse
+   ```
+
+2. **Check that git status actually ran:**
+   The hook only triggers after successful git status commands
+
+3. **Ensure hooks are enabled** (see above)
+
+4. **Restart Claude Code** - PostToolUse hooks are registered at startup
+
+### Module Not Found Errors
+
+**Problem**: Hook scripts fail with "Cannot find module" errors
+
+**Solution**:
+```bash
+# Navigate to plugin directory
+cd .hybrid-memory-bank  # or hybrid-memory-bank-plugin
+
+# Install dependencies
+npm install
+
+# Verify node_modules exists
+ls -la node_modules/
+```
+
+### Sessions Not Being Created
+
+**Problem**: `/memory show` shows no session data
+
+**Solutions**:
+
+1. **Check .claude-memory directory exists:**
+   ```bash
+   ls -la .claude-memory/
+   ```
+
+2. **Manually trigger session creation:**
+   Start a new Claude Code session (the SessionStart hook should create it)
+
+3. **Check for write permissions:**
+   ```bash
+   # Ensure Claude Code can write to project directory
+   touch .test-write && rm .test-write
+   ```
+
+### Windows-Specific Issues
+
+**Problem**: Hooks not working on Windows
+
+**Solutions**:
+
+1. **Use correct path for global settings:**
+   ```
+   %APPDATA%/claude-code/settings.json
+   ```
+
+2. **Ensure Node.js is in PATH:**
+   ```cmd
+   node --version
+   npm --version
+   ```
+
+3. **Use Git Bash or WSL** for running setup commands
+
+4. **Check file permissions** - Windows may require running as administrator
+
+### Still Not Working?
+
+If you've tried all the above:
+
+1. **Collect diagnostic info:**
+   ```bash
+   echo "=== Node Version ==="
+   node --version
+
+   echo "=== Plugin Directory ==="
+   ls -la .hybrid-memory-bank/ || ls -la hybrid-memory-bank-plugin/
+
+   echo "=== .claude Directory ==="
+   ls -la .claude/
+
+   echo "=== Global Settings ==="
+   cat ~/.config/claude-code/settings.json
+
+   echo "=== Local Settings ==="
+   cat .claude/settings.json
+
+   echo "=== Hook Permissions ==="
+   ls -l .claude/hooks/
+   ```
+
+2. **Report an issue** with the diagnostic output at:
+   https://github.com/mevans2120/hybrid-memory-bank-plugin/issues
 
 ## 📖 Documentation
 
