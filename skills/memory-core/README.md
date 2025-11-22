@@ -106,17 +106,43 @@ Git-tracked, human-edited:
 
 ## Manual Testing
 
-Test the initialization:
+### Initialization
 ```bash
 cd /path/to/your/project
 node ~/.claude/skills/memory-core/scripts/init.js
 ```
 
-Expected output:
-- ✓ Created directories
-- ✓ Created session
-- ✓ Displayed session info
-- ✓ No errors
+### Show Session
+```bash
+node ~/.claude/skills/memory-core/scripts/session-show.js
+```
+
+### Update Session
+```bash
+# Set current task
+node ~/.claude/skills/memory-core/scripts/session-update.js \
+  --feature "Building authentication system" \
+  --progress "in_progress"
+
+# Add context note
+node ~/.claude/skills/memory-core/scripts/session-update.js \
+  --note "Remember to test edge cases"
+
+# Add next step
+node ~/.claude/skills/memory-core/scripts/session-update.js \
+  --next-step "Write unit tests for login flow"
+```
+
+### Archive Session
+```bash
+node ~/.claude/skills/memory-core/scripts/session-archive.js
+```
+
+### Expected Outputs
+- ✓ All scripts execute without errors
+- ✓ Session data persists correctly
+- ✓ Archive creates file in correct location
+- ✓ Data format matches plugin schema
 
 ## Compatibility
 

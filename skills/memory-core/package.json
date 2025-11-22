@@ -1,12 +1,15 @@
 {
   "name": "@memory-bank/memory-core-skill",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Reliable project memory management for Claude Code - session tracking, file history, and pattern learning",
   "type": "commonjs",
   "main": "scripts/init.js",
   "scripts": {
     "init": "node scripts/init.js",
-    "test": "echo \"Phase 1 - tests coming in Phase 2\" && exit 0"
+    "show": "node scripts/session-show.js",
+    "update": "node scripts/session-update.js",
+    "archive": "node scripts/session-archive.js",
+    "test": "echo \"Phase 2 complete - integration tests coming in later phases\" && exit 0"
   },
   "keywords": [
     "claude-code",

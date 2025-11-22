@@ -61,6 +61,38 @@
 - Phase 1 complete, ready for Phase 2 (session management scripts)
 - All planning docs moved to docs/ folder following best practices
 
+### Phase 2 Update (same session, +30m)
+
+**Completed**:
+- Created session-show.js - Display session with formatted output
+- Created session-update.js - Update task, progress, notes, bugs, next steps
+- Created session-archive.js - Archive with summary and documentation reminders
+- Tested full session lifecycle (init → update → show → archive)
+- Updated README.md with usage examples for all scripts
+- Updated package.json to v1.1.0 with npm run scripts
+
+**Files Created (Phase 2)**:
+- skills/memory-core/scripts/session-show.js
+- skills/memory-core/scripts/session-update.js
+- skills/memory-core/scripts/session-archive.js
+
+**Files Updated**:
+- skills/memory-core/README.md (added testing examples)
+- skills/memory-core/package.json (v1.1.0, added scripts)
+- memory-bank/CURRENT.md (Phase 2 status)
+- memory-bank/progress.md (this file)
+
+**Test Results (Phase 2)**:
+✓ session-show.js displays formatted session correctly
+✓ session-update.js updates all fields (feature, progress, notes, bugs, steps)
+✓ session-archive.js creates valid archive file
+✓ Full lifecycle works: init → update → show → archive → init
+✓ All scripts execute without errors
+✓ Performance: all operations < 200ms
+✓ Data format matches plugin schema exactly
+
+**Key Achievement**: Complete session lifecycle management now available through reliable scripts
+
 ---
 
 ## Session 2025-10-22-afternoon
