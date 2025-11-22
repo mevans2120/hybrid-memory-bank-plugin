@@ -93,6 +93,30 @@
 
 **Key Achievement**: Complete session lifecycle management now available through reliable scripts
 
+### Phase 3 Update (same session, +20m)
+
+**Completed**:
+- Created track-change.js - Manual file change tracking with action types
+- Created show-changes.js - Display changes grouped by file with stats
+- Tested circular buffer, action types, path normalization, grouping
+- Updated README.md with file tracking examples
+- Updated package.json to v1.2.0 with track/changes scripts
+
+**Files Created (Phase 3)**:
+- skills/memory-core/scripts/track-change.js
+- skills/memory-core/scripts/show-changes.js
+
+**Test Results (Phase 3)**:
+✓ track-change.js records changes correctly
+✓ Path normalization (relative → absolute)
+✓ Action types validated (6 types supported)
+✓ show-changes.js groups by file correctly
+✓ Summary statistics accurate
+✓ CLI argument parsing works
+✓ Performance: all operations < 100ms
+
+**Key Achievement**: Reliable file change tracking replaces broken PostToolUse hook
+
 ---
 
 ## Session 2025-10-22-afternoon

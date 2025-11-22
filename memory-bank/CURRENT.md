@@ -22,11 +22,25 @@ Hybrid Memory Bank plugin for Claude Code - combines session memory with memory 
   - [x] Create session-archive.js (archive session)
   - [x] Test all scripts together
   - [x] Update documentation (README, package.json)
+  - [x] Create git commit with test results
+- [x] Phase 3: File Change Tracking scripts ✅
+  - [x] Create track-change.js (record file changes)
+  - [x] Create show-changes.js (display changes grouped by file)
+  - [x] Test circular buffer (20 max), action types, grouping
+  - [x] Update documentation (README, package.json v1.2.0)
   - [ ] Create git commit with test results
-- [ ] Phase 3: File Change Tracking scripts
 - [ ] Phase 4: Pattern Learning & Project Info scripts
 
 ## Recent Changes (2025-11-22)
+- **File Change Tracking Scripts** (Phase 3 Complete):
+  - Created track-change.js - Record file changes with action types
+  - Created show-changes.js - Display changes grouped by file or chronologically
+  - Supports 6 action types: created, modified, deleted, staged, committed, created/updated
+  - Implements circular buffer (20 max, newest first)
+  - Auto-converts relative paths to absolute
+  - Summary statistics (actions, unique files)
+  - Updated package.json to v1.2.0
+
 - **Session Management Scripts** (Phase 2 Complete):
   - Created session-show.js - Beautiful formatted session display
   - Created session-update.js - Update tasks, notes, progress, bugs

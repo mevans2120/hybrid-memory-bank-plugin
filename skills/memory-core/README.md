@@ -138,11 +138,39 @@ node ~/.claude/skills/memory-core/scripts/session-update.js \
 node ~/.claude/skills/memory-core/scripts/session-archive.js
 ```
 
+### Track File Changes
+```bash
+# Track a modified file
+node ~/.claude/skills/memory-core/scripts/track-change.js src/auth/middleware.ts
+
+# Track with specific action
+node ~/.claude/skills/memory-core/scripts/track-change.js src/new-file.ts --action created
+node ~/.claude/skills/memory-core/scripts/track-change.js src/old-file.ts --action deleted
+```
+
+### Show Recent Changes
+```bash
+# Show all changes (grouped by file)
+node ~/.claude/skills/memory-core/scripts/show-changes.js
+
+# Show only last 10 changes
+node ~/.claude/skills/memory-core/scripts/show-changes.js --limit 10
+
+# Filter by specific file
+node ~/.claude/skills/memory-core/scripts/show-changes.js --file src/auth/middleware.ts
+
+# Show chronologically (not grouped)
+node ~/.claude/skills/memory-core/scripts/show-changes.js --chronological
+```
+
 ### Expected Outputs
 - ✓ All scripts execute without errors
 - ✓ Session data persists correctly
 - ✓ Archive creates file in correct location
 - ✓ Data format matches plugin schema
+- ✓ Changes tracked with timestamps
+- ✓ Circular buffer maintains 20 max items
+- ✓ File paths converted to absolute
 
 ## Compatibility
 
