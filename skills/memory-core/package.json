@@ -1,0 +1,41 @@
+{
+  "name": "@memory-bank/memory-core-skill",
+  "version": "1.0.0",
+  "description": "Reliable project memory management for Claude Code - session tracking, file history, and pattern learning",
+  "type": "commonjs",
+  "main": "scripts/init.js",
+  "scripts": {
+    "init": "node scripts/init.js",
+    "test": "echo \"Phase 1 - tests coming in Phase 2\" && exit 0"
+  },
+  "keywords": [
+    "claude-code",
+    "skill",
+    "memory",
+    "session-management",
+    "file-tracking",
+    "pattern-learning"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin",
+    "directory": "skills/memory-core"
+  },
+  "bugs": {
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin/issues"
+  },
+  "author": "Michael Evans",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "lib/",
+    "scripts/"
+  ]
+}
