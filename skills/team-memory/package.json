@@ -1,0 +1,24 @@
+{
+  "name": "@memory-bank/team-memory-skill",
+  "version": "1.0.0",
+  "description": "Team collaboration features - shared patterns, onboarding docs, and team memory synchronization",
+  "main": "lib/teamHelper.js",
+  "scripts": {
+    "team-patterns": "node scripts/team-patterns.js",
+    "onboarding": "node scripts/onboarding.js",
+    "team-sync": "node scripts/team-sync.js"
+  },
+  "keywords": [
+    "claude-code",
+    "team-collaboration",
+    "patterns",
+    "onboarding",
+    "knowledge-sharing"
+  ],
+  "author": "Memory Bank Skills Suite",
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
