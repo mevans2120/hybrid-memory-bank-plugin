@@ -4,7 +4,7 @@
 Hybrid Memory Bank plugin for Claude Code - combines session memory with memory bank documentation
 
 ## Current Focus
-**Skills Suite Development** - Phase 1 Complete, building reliable skill-based alternative to unreliable plugin hooks
+**Skills Suite Development** - Phase 4 Complete, building reliable skill-based alternative to unreliable plugin hooks
 
 ## Active Tasks
 - [x] Phase 1: Foundation & Core Skill ✅
@@ -28,10 +28,27 @@ Hybrid Memory Bank plugin for Claude Code - combines session memory with memory 
   - [x] Create show-changes.js (display changes grouped by file)
   - [x] Test circular buffer (20 max), action types, grouping
   - [x] Update documentation (README, package.json v1.2.0)
+  - [x] Create git commit with test results
+- [x] Phase 4: Pattern Learning & Project Info scripts ✅
+  - [x] Create learn-pattern.js (store code patterns)
+  - [x] Create show-patterns.js (display patterns by type)
+  - [x] Create tech-stack.js (manage tech stack info)
+  - [x] Test all pattern and project info scripts
+  - [x] Update documentation (README, package.json v1.3.0)
   - [ ] Create git commit with test results
-- [ ] Phase 4: Pattern Learning & Project Info scripts
+- [ ] Phase 5: Git Workflow Skill
 
 ## Recent Changes (2025-11-22)
+- **Pattern Learning & Project Info Scripts** (Phase 4 Complete):
+  - Created learn-pattern.js - Store code patterns with examples and usage
+  - Created show-patterns.js - Display patterns by type or all patterns
+  - Created tech-stack.js - Manage tech stack information
+  - Supports 4 pattern types: api-patterns, error-handling, ui-patterns, database-patterns
+  - Tech stack with 12+ common fields plus custom fields
+  - Auto-timestamps: learnedAt for patterns, lastUpdated for tech stack
+  - All performance targets met (< 100ms for operations)
+  - Updated package.json to v1.3.0
+
 - **File Change Tracking Scripts** (Phase 3 Complete):
   - Created track-change.js - Record file changes with action types
   - Created show-changes.js - Display changes grouped by file or chronologically
@@ -67,23 +84,26 @@ Hybrid Memory Bank plugin for Claude Code - combines session memory with memory 
 - **Test Results**:
   - Phase 1: ✓ All initialization and compatibility tests passing
   - Phase 2: ✓ All session lifecycle tests passing
-  - ✓ Session show displays formatted output
-  - ✓ Session update modifies all fields correctly
-  - ✓ Session archive creates valid archive file
-  - ✓ Performance: all operations < 200ms
+  - Phase 3: ✓ All file tracking tests passing
+  - Phase 4: ✓ All pattern learning and tech stack tests passing
+  - ✓ Pattern storage with correct timestamps
+  - ✓ Tech stack updates with auto-timestamps
+  - ✓ 4 pattern types all working (api, error-handling, ui, database)
+  - ✓ Show patterns displays correctly (summary, by type, specific)
+  - ✓ Performance: all operations < 100ms
   - ✓ 100% compatible with plugin v2.0.0
 
 ## Context
 **Problem**: Plugin hooks (SessionStart, PostToolUse) are unreliable - don't fire consistently, often ignored by agent
 **Solution**: Skills suite with manual but reliable invocation
 **Approach**: 4 specialized skills (memory-core, git-workflow, documentation, team-memory)
-**Status**: Phase 1 complete, ready for Phase 2
+**Status**: Phase 4 complete, ready for Phase 5
 
 ## Next Steps
-- Commit Phase 1 work (awaiting approval)
-- Begin Phase 2: Session management scripts (show, update, archive)
-- Build out full session lifecycle operations
-- Add AI-powered session summaries
+- Commit Phase 4 work (awaiting approval)
+- Begin Phase 5: Git Workflow Skill (commit/push with approval gates)
+- Build git integration for automated commits
+- Add AI-powered commit message generation
 
 ## Known Issues
 None at this time

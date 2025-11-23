@@ -163,6 +163,62 @@ node ~/.claude/skills/memory-core/scripts/show-changes.js --file src/auth/middle
 node ~/.claude/skills/memory-core/scripts/show-changes.js --chronological
 ```
 
+### Learn Patterns
+```bash
+# Learn an API pattern
+node ~/.claude/skills/memory-core/scripts/learn-pattern.js api-patterns rest-endpoint \
+  --pattern "RESTful endpoint with error handling" \
+  --example "app.get('/api/users', async (req, res) => { ... })" \
+  --usage "Use for all API endpoints"
+
+# Learn error handling pattern
+node ~/.claude/skills/memory-core/scripts/learn-pattern.js error-handling try-catch-async \
+  --pattern "Standard try-catch with logging" \
+  --usage "Use for all async/await code"
+
+# Learn UI pattern
+node ~/.claude/skills/memory-core/scripts/learn-pattern.js ui-patterns modal-component \
+  --description "Reusable modal component" \
+  --example "<Modal isOpen={isOpen}>{children}</Modal>"
+
+# Learn database pattern
+node ~/.claude/skills/memory-core/scripts/learn-pattern.js database-patterns query-builder \
+  --pattern "Prisma query with relations" \
+  --example "db.user.findMany({ include: { posts: true } })"
+```
+
+### Show Patterns
+```bash
+# Show all patterns (summary)
+node ~/.claude/skills/memory-core/scripts/show-patterns.js
+
+# Show all API patterns (detailed)
+node ~/.claude/skills/memory-core/scripts/show-patterns.js api-patterns
+
+# Show specific pattern
+node ~/.claude/skills/memory-core/scripts/show-patterns.js api-patterns rest-endpoint
+```
+
+### Manage Tech Stack
+```bash
+# Show current tech stack
+node ~/.claude/skills/memory-core/scripts/tech-stack.js
+
+# Update tech stack
+node ~/.claude/skills/memory-core/scripts/tech-stack.js \
+  --framework React \
+  --language TypeScript \
+  --runtime "Node.js 20" \
+  --database PostgreSQL \
+  --orm Prisma \
+  --state-management "TanStack Query" \
+  --styling "Tailwind CSS" \
+  --testing Vitest
+
+# Add custom field
+node ~/.claude/skills/memory-core/scripts/tech-stack.js --custom apiClient="Axios"
+```
+
 ### Expected Outputs
 - ✓ All scripts execute without errors
 - ✓ Session data persists correctly
@@ -171,6 +227,10 @@ node ~/.claude/skills/memory-core/scripts/show-changes.js --chronological
 - ✓ Changes tracked with timestamps
 - ✓ Circular buffer maintains 20 max items
 - ✓ File paths converted to absolute
+- ✓ Patterns stored with learnedAt timestamp
+- ✓ Tech stack updates with lastUpdated timestamp
+- ✓ Pattern types validated (api, error-handling, ui, database)
+- ✓ All performance targets met (< 100ms for most operations)
 
 ## Compatibility
 
@@ -239,7 +299,7 @@ Phase 2-4 will add:
 
 ## Version
 
-**Current**: 1.0.0 (Phase 1 - Foundation)
+**Current**: 1.3.0 (Phase 4 - Pattern Learning & Project Info)
 **Compatible with**: hybrid-memory-bank-plugin v2.0.0
 
 ## License
