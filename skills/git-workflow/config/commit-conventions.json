@@ -1,0 +1,106 @@
+{
+  "types": {
+    "feat": {
+      "description": "A new feature",
+      "emoji": "✨"
+    },
+    "fix": {
+      "description": "A bug fix",
+      "emoji": "🐛"
+    },
+    "docs": {
+      "description": "Documentation only changes",
+      "emoji": "📝"
+    },
+    "style": {
+      "description": "Changes that don't affect code meaning (formatting, whitespace)",
+      "emoji": "💄"
+    },
+    "refactor": {
+      "description": "Code change that neither fixes a bug nor adds a feature",
+      "emoji": "♻️"
+    },
+    "perf": {
+      "description": "Performance improvement",
+      "emoji": "⚡"
+    },
+    "test": {
+      "description": "Adding or updating tests",
+      "emoji": "✅"
+    },
+    "build": {
+      "description": "Changes to build system or dependencies",
+      "emoji": "📦"
+    },
+    "ci": {
+      "description": "CI/CD configuration changes",
+      "emoji": "👷"
+    },
+    "chore": {
+      "description": "Other changes that don't modify src or test files",
+      "emoji": "🔧"
+    },
+    "revert": {
+      "description": "Reverts a previous commit",
+      "emoji": "⏪"
+    }
+  },
+  "scopes": {
+    "common": [
+      "core",
+      "api",
+      "ui",
+      "auth",
+      "db",
+      "config",
+      "deps",
+      "tests"
+    ],
+    "skills": [
+      "memory-core",
+      "git-workflow",
+      "documentation",
+      "team-memory"
+    ]
+  },
+  "footer": {
+    "coAuthor": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "generatedWith": "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+  },
+  "rules": {
+    "maxSubjectLength": 72,
+    "maxBodyLineLength": 100,
+    "requireScope": false,
+    "requireBody": false,
+    "requireFooter": false,
+    "allowEmoji": false
+  },
+  "sensitive": {
+    "patterns": [
+      "\\.env",
+      "\\.env\\..*",
+      "credentials",
+      "secrets",
+      "private.*\\.key",
+      ".*\\.pem",
+      "id_rsa",
+      "id_dsa",
+      ".*\\.p12",
+      ".*\\.pfx",
+      "password",
+      "aws_.*_key"
+    ],
+    "extensions": [
+      ".key",
+      ".pem",
+      ".p12",
+      ".pfx",
+      ".cer",
+      ".crt"
+    ]
+  },
+  "largeFile": {
+    "warnSizeBytes": 1048576,
+    "errorSizeBytes": 10485760
+  }
+}

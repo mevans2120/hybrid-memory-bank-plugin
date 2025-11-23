@@ -1,0 +1,46 @@
+{
+  "name": "@memory-bank/git-workflow-skill",
+  "version": "1.0.0",
+  "description": "Safe git operations with approval gates - commit, push, branch management with security checks",
+  "type": "commonjs",
+  "main": "scripts/status.js",
+  "scripts": {
+    "status": "node scripts/status.js",
+    "commit": "node scripts/commit.js",
+    "push": "node scripts/push.js",
+    "branch": "node scripts/branch.js"
+  },
+  "keywords": [
+    "claude-code",
+    "skill",
+    "git",
+    "workflow",
+    "commit",
+    "push",
+    "branch",
+    "security"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin",
+    "directory": "skills/git-workflow"
+  },
+  "bugs": {
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin/issues"
+  },
+  "author": "Michael Evans",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "lib/",
+    "scripts/",
+    "config/"
+  ]
+}
