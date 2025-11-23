@@ -5,3 +5,6 @@ coverage/
 .env.test
 dist/
 *.tgz
+
+# Personal memory data (project-specific)
+.claude-memory/

@@ -1,8 +1,71 @@
 # Hybrid Memory Bank Plugin
 
-Hybrid memory system for Claude Code that combines automated JSON-based memory with human-readable markdown documentation.
+Hybrid memory system for Claude Code that combines automated JSON-based memory with human-readable markdown documentation, now with a **comprehensive skills suite** for enhanced functionality.
 
-## 🚀 Features
+## ⚡ Quick Start - Skills Suite (Recommended)
+
+The plugin now includes **4 specialized skills** that provide reliable, manual-invocation alternatives to plugin hooks:
+
+```bash
+# Clone the repository
+git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git
+cd hybrid-memory-bank-plugin
+
+# Install skills to ~/.claude/skills/ for cross-project use
+./install.sh
+
+# Start using skills in ANY project!
+npm run --prefix ~/.claude/skills/memory-core session-show
+npm run --prefix ~/.claude/skills/git-workflow status
+npm run --prefix ~/.claude/skills/documentation update-current
+npm run --prefix ~/.claude/skills/team-memory team-patterns -- --list
+```
+
+**Why Skills?** Plugin hooks (SessionStart, PostToolUse) don't fire consistently. Skills provide the same functionality with **100% reliability** through manual but straightforward invocation.
+
+## 🎯 Skills Suite Overview
+
+### 4 Specialized Skills Included
+
+1. **memory-core** - Session management, pattern learning, tech stack tracking
+   - 9 CLI scripts for session lifecycle
+   - Pattern library (4 types: API, error-handling, UI, database)
+   - Tech stack management with 12+ fields
+   - 100% compatible with plugin data structures
+
+2. **git-workflow** - Safe git operations with approval gates
+   - Smart commit with AI-suggested messages
+   - Safe push with mandatory approval
+   - Branch management with naming conventions
+   - Enhanced status with statistics
+   - Security: blocks sensitive files, warns on large files
+
+3. **documentation** - Markdown management and session docs
+   - Update CURRENT.md with session data
+   - Generate session summaries for progress.md
+   - Format changelog entries (Keep a Changelog format)
+   - Complete session end workflow orchestration
+
+4. **team-memory** - Team collaboration and knowledge sharing
+   - Shared pattern library (git-tracked)
+   - Onboarding documentation generation
+   - Personal to team pattern sync workflow
+   - Cross-project team pattern access
+
+### Skills vs Plugin Hooks
+
+| Feature | Skills | Plugin Hooks |
+|---------|--------|--------------|
+| Reliability | ✅ 100% (manual invocation) | ⚠️ Inconsistent (hooks don't always fire) |
+| Cross-project | ✅ Install once, use everywhere | ❌ Per-project setup |
+| Team sharing | ✅ Git-tracked in `.claude/skills/` | ❌ Complex setup |
+| Maintenance | ✅ Simple scripts | ⚠️ Hook wrapper complexity |
+
+**Recommendation**: Use skills for daily workflow. Use plugin hooks only if you need automatic triggers.
+
+## 🚀 Traditional Plugin Features
+
+If you prefer automatic hook-based functionality:
 
 - **Auto Session Management**: Automatically initializes and archives sessions
 - **Pattern Learning**: Remembers code patterns and conventions
@@ -18,6 +81,46 @@ Before installing, ensure you have:
 - Claude Code installed and working
 - Node.js (v16 or higher)
 - Git
+
+### Option 1: Skills Installation (Recommended)
+
+**Install skills globally** for use across all your projects:
+
+```bash
+# Clone the repository
+git clone https://github.com/mevans2120/hybrid-memory-bank-plugin.git
+cd hybrid-memory-bank-plugin
+
+# Run installation script
+./install.sh
+```
+
+The installer will:
+- Copy all 4 skills to `~/.claude/skills/`
+- Make scripts executable
+- Provide usage examples
+- Handle existing installations (backup or merge)
+
+**Verify installation:**
+```bash
+ls -la ~/.claude/skills/
+# You should see: memory-core/ git-workflow/ documentation/ team-memory/ shared-lib/
+
+# Test a skill
+npm run --prefix ~/.claude/skills/memory-core session-show
+```
+
+**Skills are now available in ALL your projects!** 🎉
+
+For detailed usage, see each skill's README:
+- `~/.claude/skills/memory-core/README.md`
+- `~/.claude/skills/git-workflow/README.md`
+- `~/.claude/skills/documentation/README.md`
+- `~/.claude/skills/team-memory/README.md`
+
+### Option 2: Plugin Hooks Installation (For Automatic Triggers)
+
+If you prefer automatic hook-based functionality:
 
 ### Step-by-Step Installation
 
@@ -648,23 +751,30 @@ Edit `.claude-plugin/plugin.json`:
 
 ## 🤝 Contributing
 
-This plugin is currently in development within the care-tracker repository. Once complete, it will be moved to its own repository.
+Contributions are welcome! This repository contains both the plugin hooks and the skills suite.
 
-### Current Location
+### Repository Structure
 ```
-/Users/michaelevans/codymd-hacknback-main/claude-memory-bank-plugin/
+.claude/
+├── hooks/           # Plugin hooks (SessionStart, PostToolUse)
+└── skills/          # Skills suite (4 specialized skills)
+    ├── memory-core/
+    ├── git-workflow/
+    ├── documentation/
+    └── team-memory/
 ```
 
-### Migration Plan
-When ready to publish:
-```bash
-# Copy to new repo
-cp -r claude-memory-bank-plugin ~/claude-memory-bank-plugin
-cd ~/claude-memory-bank-plugin
-git init
-git add .
-git commit -m "Initial plugin implementation"
-```
+### Contributing Guidelines
+
+1. **For Skills**: Add/improve scripts in `.claude/skills/`
+2. **For Plugin Hooks**: Modify hooks in `.claude/hooks/`
+3. **Testing**: Test both skills and hooks thoroughly
+4. **Documentation**: Update READMEs for any changes
+
+### Reporting Issues
+
+Found a bug or have a feature request? Please open an issue at:
+https://github.com/mevans2120/hybrid-memory-bank-plugin/issues
 
 ## 📄 License
 
