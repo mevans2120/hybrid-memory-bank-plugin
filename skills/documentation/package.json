@@ -1,0 +1,45 @@
+{
+  "name": "@memory-bank/documentation-skill",
+  "version": "1.0.0",
+  "description": "Smart markdown documentation management - auto-generate CURRENT.md updates, session summaries, and changelog entries",
+  "type": "commonjs",
+  "main": "scripts/end-session.js",
+  "scripts": {
+    "update-current": "node scripts/update-current.js",
+    "add-progress": "node scripts/add-progress.js",
+    "add-changelog": "node scripts/add-changelog.js",
+    "end-session": "node scripts/end-session.js"
+  },
+  "keywords": [
+    "claude-code",
+    "skill",
+    "documentation",
+    "markdown",
+    "changelog",
+    "progress",
+    "session"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin",
+    "directory": "skills/documentation"
+  },
+  "bugs": {
+    "url": "https://github.com/michaelevans/hybrid-memory-bank-plugin/issues"
+  },
+  "author": "Michael Evans",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "lib/",
+    "scripts/",
+    "templates/"
+  ]
+}
